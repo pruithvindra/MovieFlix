@@ -1,0 +1,130 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:movieflix/components/formWidget.dart';
+import 'package:movieflix/components/themebutton.dart';
+import 'package:movieflix/providers/repo.dart';
+import 'package:movieflix/style.dart';
+import 'package:movieflix/widgets/movietile.dart';
+import 'package:provider/provider.dart';
+
+class NowplayingScreen extends StatefulWidget {
+  NowplayingScreen({Key? key}) : super(key: key);
+
+  @override
+  _NowplayingScreenState createState() => _NowplayingScreenState();
+}
+
+class _NowplayingScreenState extends State<NowplayingScreen> {
+  @override
+  bool istap = false;
+  var repository;
+  void initState() {
+    repository = Provider.of<DataProvider>(context, listen: false);
+    // TODO: implement initState
+  }
+
+  void ontap() {
+    setState(() {
+      istap = true;
+    });
+  }
+
+  var searchmovies = [];
+  searchf(value) {
+    searchmovies = [];
+    searchval = value;
+
+    var movies =
+        Provider.of<DataProvider>(context, listen: false).nowPlaying.results;
+
+    movies.forEach((element) {
+      element.title.toLowerCase().contains(searchval)
+          ? searchmovies.add(element)
+          : null;
+    });
+    print('the len is ${searchmovies.length}');
+    print(searchval);
+    setState(() {});
+  }
+
+  var searchval = null;
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        return repository.getdata();
+      },
+      child: Container(
+        height: height,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: FormWIdget(
+                    hintText: 'search',
+                    sufixicon: Icon(Icons.search),
+                    width: width * 0.4,
+                    onTap: ontap,
+                    onchanged: (val) {
+                      searchf(val);
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                ChangeThemeButtonWidget(),
+                SizedBox(
+                  width: 20,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                // physics: BouncingScrollPhysics(),
+                child: Consumer<DataProvider>(
+                  builder: (ctx, data, _) {
+                    List movies = data.nowPlaying.results;
+
+                    return searchval == '' || searchval == null
+                        ? Column(
+                            children: List.generate(
+                                data.nowPlaying.results.length, (index) {
+                              return MovieTile(
+                                width: width,
+                                Movie: data.nowPlaying.results[index],
+                              );
+                            }),
+                          )
+                        : Column(
+                            children:
+                                List.generate(searchmovies.length, (index) {
+                              return MovieTile(
+                                width: width,
+                                Movie: searchmovies[index],
+                              );
+                            }),
+                          );
+                  },
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
