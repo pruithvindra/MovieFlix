@@ -99,25 +99,38 @@ class _NowplayingScreenState extends State<NowplayingScreen> {
                   builder: (ctx, data, _) {
                     List movies = data.nowPlaying.results;
 
-                    return searchval == '' || searchval == null
+                    return data.topratedMovies.results!.length == 0 ||
+                            data.topratedMovies.results!.length == null
                         ? Column(
-                            children: List.generate(
-                                data.nowPlaying.results.length, (index) {
-                              return MovieTile(
-                                width: width,
-                                Movie: data.nowPlaying.results[index],
-                              );
-                            }),
+                            children: [
+                              Text("No Data to show",
+                                  style: Style.display3.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25)),
+                              Container(
+                                height: height,
+                              )
+                            ],
                           )
-                        : Column(
-                            children:
-                                List.generate(searchmovies.length, (index) {
-                              return MovieTile(
-                                width: width,
-                                Movie: searchmovies[index],
+                        : searchval == '' || searchval == null
+                            ? Column(
+                                children: List.generate(
+                                    data.nowPlaying.results.length, (index) {
+                                  return MovieTile(
+                                    width: width,
+                                    Movie: data.nowPlaying.results[index],
+                                  );
+                                }),
+                              )
+                            : Column(
+                                children:
+                                    List.generate(searchmovies.length, (index) {
+                                  return MovieTile(
+                                    width: width,
+                                    Movie: searchmovies[index],
+                                  );
+                                }),
                               );
-                            }),
-                          );
                   },
                 ),
               ),

@@ -78,11 +78,15 @@ class _NowplayingScreenState extends State<MainScreen> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(8),
-          child: PageView(
-            children: tabPages,
-            onPageChanged: onPageChanged,
-            controller: _pageController,
-          ),
+          child: isloading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : PageView(
+                  children: tabPages,
+                  onPageChanged: onPageChanged,
+                  controller: _pageController,
+                ),
         ),
       ),
     );
